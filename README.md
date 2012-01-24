@@ -1,21 +1,42 @@
 # ChildBrowser plugin for PhoneGap
 
-This is a prototype of a cross-platform ChildBrowser plugin for plugin. It will
-initially support Android, iOS and BlackBerry; @purplecabbage's WinPhone plugin
-will be included at a later date.
+This is a prototype of a cross-platform ChildBrowser PhoneGap plugin.
 
-## The ChildBrowser
+In order of implementation, this will support Android, iOS, BlackBerry and
+Windows Phone, based on existing implementations in this repo. For production
+use, those existing implementations should be favored over this one.
 
-ChildBrowser allows you display external webpages from within your PhoneGap
-app. An obvious use case: having an external link in your app, displaying the
-contents to the user without exiting or hijacking your app entirely.
+The goal is for a single JavaScript file to be usable on all supported
+platforms, and the native code to be installed in a project through a separate
+script.
 
-## API
+## The Structure
 
-> showWebPage
+    plugin.xml
+    -- src
+      -- android
+        -- ChildBrowser.java
+      -- ios
+        -- ChildBrowser.bundle
+          -- arrow_left.png
+          -- arrow_left@2x.png
+          -- ...
+        -- ChildBrowserCommand.h
+        -- ChildBrowserCommand.m
+        -- etc
+    -- www
+      -- childbrowser.js
+      -- childbrowser
+        -- icon_arrow_left.png
+        -- icon_arrow_right.png
+        -- ...
 
-    window.plugins.ChildBrowser.showWebPage(url, [options]);
+## plugin.xml
 
-> close
+The plugin.xml file is loosely based on the W3C's Widget Config spec.
 
-    window.plugins.ChildBrowser.close();
+It is in XML to facilitate transfer of nodes from this cross platform manifest
+to native XML manifests (AndroidManifest.xml, App-Info.plist, config.xml (BB)).
+
+A specification for this file format will be forthcoming once more feedback
+has been received, and the tooling around plugin installation is more mature. 
