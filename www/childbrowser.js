@@ -32,7 +32,7 @@ var ChildBrowser = (function (gap) {
                 break;
             case LOCATION_CHANGED_EVENT:
                 if (isFunction(ChildBrowser.onLocationChange)) {
-                    ChildBrowser.onLocationChange();
+                    ChildBrowser.onLocationChange(data.location);
                 }
                 break;
             case OPEN_EXTERNAL_EVENT:
@@ -100,7 +100,15 @@ var ChildBrowser = (function (gap) {
      * Load ChildBrowser
      */
     gap.addConstructor(function () {
-        gap.addPlugin("childBrowser", ChildBrowser);
+        if (gap.addPlugin) {
+            gap.addPlugin("childBrowser", ChildBrowser);
+        } else {
+            if (!window.plugins) {
+                window.plugins = {};
+            }
+
+            window.plugins.childBrowser = ChildBrowser;
+        }
     });
 
     return ChildBrowser;
