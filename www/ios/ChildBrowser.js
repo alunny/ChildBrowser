@@ -3,10 +3,6 @@
 
 /*global PhoneGap */
 
-function ChildBrowser() {
-  // Does nothing
-}
-
 // Callback when the location of the page changes
 // called from native
 ChildBrowser._onLocationChange = function(newLoc)
@@ -58,16 +54,3 @@ ChildBrowser.prototype.jsExec = function(jsString)
   // Not Implemented!!
   //PhoneGap.exec("ChildBrowserCommand.jsExec",jsString);
 };
-
-// Note: this plugin does NOT install itself, call this method some time after deviceready to install it
-// it will be returned, and also available globally from window.plugins.childBrowser
-ChildBrowser.install = function()
-{
-  if(!window.plugins) {
-    window.plugins = {};
-  }
-
-  window.plugins.childBrowser = new ChildBrowser();
-  return window.plugins.childBrowser;
-};
-
