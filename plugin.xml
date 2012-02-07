@@ -28,7 +28,7 @@
     </platform>
     <!-- ios -->
     <platform name="ios">
-        <plugins-plist key="com.phonegap.plugins.childbrowser"
+        <plugins-plist key="ChildBrowser"
                     string="ChildBrowserCommand" />
 
         <resource-file src="ChildBrowser.bundle" />
