@@ -1,14 +1,12 @@
 # ChildBrowser plugin for PhoneGap
 
-This is a prototype of a cross-platform ChildBrowser PhoneGap plugin.
-
-In order of implementation, this will support Android, iOS, BlackBerry and
-Windows Phone, based on existing implementations in this repo. For production
-use, those existing implementations should be favored over this one.
+This is a prototype of a cross-platform ChildBrowser PhoneGap plugin. Android
+and iOS are currently supported. Support for BlackBerry and Windows Phone is
+also planned.
 
 The goal is for a single JavaScript file to be usable on all supported
-platforms, and the native code to be installed in a project through a separate
-script.
+platforms, and the native code to be installed in a project through a [separate
+script](http://github.com/alunny/pluginstall).
 
 ## The Structure
 
@@ -40,3 +38,97 @@ to native XML manifests (AndroidManifest.xml, App-Info.plist, config.xml (BB)).
 
 A specification for this file format will be forthcoming once more feedback
 has been received, and the tooling around plugin installation is more mature. 
+
+## ChildBrowser JavaScript API
+
+As with most Cordova/PhoneGap APIs, functionality is not available until the
+`deviceready` event has fired on the document. The `childbrowser.js` file
+should be included _after_ the `phonegap.js` file.
+
+All functions are called on the singleton ChildBrowser instance - accessible
+as `window.plugins.childBrowser`.
+
+### Methods
+
+#### showWebPage
+
+    showWebPage(url, [options])
+
+Displays a new ChildBrowser with the specified URL. Defaults to true.
+
+Available options:
+
+* `showLocationBar` (Android-only): show a location bar in the generated browser
+
+Example:
+
+    window.plugins.childBrowser.showWebPage('http://www.google.com',
+                                            { showLocationBar: true });
+
+#### close
+
+    close()
+
+Closes the ChildBrowser.
+
+Example:
+
+    window.plugins.childBrowser.close();
+
+#### openExternal
+
+    openExternal(url, usePhoneGap)
+
+(Android only) Opens the URL in a regular browser - if `usePhoneGap`, that
+browser will be a PhoneGap-enabled webview
+
+Example:
+
+    window.plugins.childBrowser.openExternal('http://www.google.com');
+
+### Events
+
+All events can be subscribed to by assigning a function to
+`window.plugins.childBrowser['on' + eventName]`; see examples below
+
+#### close
+
+Called when the ChildBrowser has been closed
+
+Example:
+
+    window.plugins.childBrowser.onClose = function () {
+        alert('childBrowser has closed');
+    };
+
+#### locationChange
+
+Called when the ChildBrowser loads a URL (including the initial location, when
+`showWebPage` is called). The callback function is passed the new URL being
+loaded.
+
+Example:
+
+    window.plugins.childBrowser.onLocationChange = function (url) {
+        alert('childBrowser has loaded ' + url);
+    };
+
+#### openExternal
+
+(iOS only) Called when the user opts to load an app in the device's browser
+(exiting the PhoneGap app in the process).
+
+Example:
+
+    window.plugins.childBrowser.onOpenExternal = function () {
+        alert('opening Mobile Safari');
+    };
+
+## License
+
+MIT License (2008). See http://opensource.org/licenses/alphabetical for full text.
+
+Copyright 2012, Andrew Lunny, Adobe Systems
+Copyright (c) 2005-2010, Nitobi Software Inc.
+Copyright (c) 2011, IBM Corporation
+(c) 2010 Jesse MacFadyen, Nitobi
