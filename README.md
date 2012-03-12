@@ -58,7 +58,9 @@ Displays a new ChildBrowser with the specified URL. Defaults to true.
 
 Available options:
 
-* `showLocationBar` (Android-only): show a location bar in the generated browser
+* `showLocationBar` (Android and iOS): show/hide a location bar in the generated browser
+* `showAddress` (Android and iOS): show/hide the address bar in the generated browser
+* `showNavigationBar` (Android and IOS): show/hide the entire navigation bar. Important: since there is no "Done"-Button anymore, the ChildBrowser can only be closed with the api call close() (see below).
 
 Example:
 
