@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.R.bool;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -52,6 +53,8 @@ public class ChildBrowser extends Plugin {
     private WebView webview;
     private EditText edittext;
     private boolean showLocationBar = true;
+    private boolean showAddress = true;
+    private boolean showNavigationBar = true;
 
     /**
      * Executes the request and returns PluginResult.
@@ -203,6 +206,8 @@ public class ChildBrowser extends Plugin {
         // Determine if we should hide the location bar.
         if (options != null) {
             showLocationBar = options.optBoolean("showLocationBar", true);
+            showNavigationBar = options.optBoolean("showNavigationBar", true);
+            showAddress = options.optBoolean("showAddress", true);
         }
 
         // Create dialog in new thread
@@ -230,6 +235,12 @@ public class ChildBrowser extends Plugin {
                 LinearLayout.LayoutParams editParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
                 LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 LinearLayout.LayoutParams wvParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+                if (!showAddress) // larger buttons if address bar is not visible
+                {
+                    backParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f);
+                    forwardParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f);
+                    closeParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f);
+                }
 
                 LinearLayout main = new LinearLayout((Context) ctx);
                 main.setOrientation(LinearLayout.VERTICAL);
@@ -325,6 +336,15 @@ public class ChildBrowser extends Plugin {
                 dialog.setContentView(main);
                 dialog.show();
                 dialog.getWindow().setAttributes(lp);
+
+                if (!showNavigationBar) {
+                    back.setVisibility(View.GONE);
+                    forward.setVisibility(View.GONE);
+                    close.setVisibility(View.GONE);
+                }
+                if (!showAddress) {
+                    edittext.setVisibility(View.GONE);
+                }
             }
 
             private Bitmap loadDrawable(String filename) throws java.io.IOException {

@@ -9,6 +9,12 @@
 
 #import "ChildBrowserViewController.h"
 
+@interface ChildBrowserViewController()
+
+//Gesture Recognizer
+- (void)addGestureRecognizer;
+
+@end
 
 @implementation ChildBrowserViewController
 
@@ -45,12 +51,16 @@
 - (ChildBrowserViewController*)initWithScale:(BOOL)enabled
 {
     self = [super init];
-	
+	if(self!=nil)
+    {
+        [self addGestureRecognizer];
+    }
 	
 	scaleEnabled = enabled;
 	
 	return self;	
 }
+
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
@@ -64,6 +74,7 @@
 	webView.delegate = self;
 	webView.scalesPageToFit = TRUE;
 	webView.backgroundColor = [UIColor whiteColor];
+    
 	NSLog(@"View did load");
 }
 
@@ -86,7 +97,6 @@
 
 
 - (void)dealloc {
-
 	webView.delegate = nil;
 	
 	[webView release];
@@ -118,8 +128,9 @@
 
 -(IBAction) onDoneButtonPress:(id)sender
 {
+    [webView stopLoading];
 	[ self closeBrowser];
-
+    
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]];
     [webView loadRequest:request];
 }
@@ -228,5 +239,81 @@
     addressLabel.text = @"Failed";
 }
 
+#pragma mark - Disaplying Controls
+
+- (void)resetControls
+{
+    
+    CGRect rect = addressLabel.frame;
+    rect.origin.y = self.view.frame.size.height-(44+26);
+    [addressLabel setFrame:rect];
+    rect=webView.frame;
+    rect.size.height= self.view.frame.size.height-(44+26);
+    [webView setFrame:rect];
+    [addressLabel setHidden:NO];
+    [toolbar setHidden:NO];
+}
+
+- (void)showLocationBar:(BOOL)isShow
+{
+    if(isShow)
+        return;
+    //the addreslabel heigth 21 toolbar 44
+    CGRect rect = webView.frame;
+    rect.size.height+=(26+44);
+    [webView setFrame:rect];
+    [addressLabel setHidden:YES];
+    [toolbar setHidden:YES];
+}
+
+- (void)showAddress:(BOOL)isShow
+{
+    if(isShow)
+        return;
+    CGRect rect = webView.frame;
+    rect.size.height+=(26);
+    [webView setFrame:rect];
+    [addressLabel setHidden:YES];
+    
+}
+
+- (void)showNavigationBar:(BOOL)isShow
+{
+    if(isShow)
+        return;
+    CGRect rect = webView.frame;
+    rect.size.height+=(44);
+    [webView setFrame:rect];
+    [toolbar setHidden:YES];
+    rect = addressLabel.frame;
+    rect.origin.y+=44;
+    [addressLabel setFrame:rect];
+}
+
+#pragma mark - Gesture Recognizer
+
+- (void)addGestureRecognizer
+{
+    UISwipeGestureRecognizer* closeRG = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(closeBrowser)];
+    closeRG.direction = UISwipeGestureRecognizerDirectionLeft;
+    closeRG.delegate=self;
+    [self.view addGestureRecognizer:closeRG];
+    [closeRG release];
+}
+
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//    return YES;
+//}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+    return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    return YES;
+}
 
 @end

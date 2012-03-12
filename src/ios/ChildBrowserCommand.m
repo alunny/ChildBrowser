@@ -39,7 +39,11 @@
 		childBrowser = [[ ChildBrowserViewController alloc ] initWithScale:FALSE ];
 		childBrowser.delegate = self;
 	}
-	
+    
+    //Show location bar
+//    if([options objectForKey:@"showLocationBar"]!=nil)
+//        [childBrowser showLocationBar:[[options objectForKey:@"showLocationBar"] boolValue]];
+    NSLog(@"showLocationBar %d",(int)[[options objectForKey:@"showLocationBar"] boolValue]);
 /* // TODO: Work in progress
 	NSString* strOrientations = [ options objectForKey:@"supportedOrientations"];
 	NSArray* supportedOrientations = [strOrientations componentsSeparatedByString:@","];
@@ -56,9 +60,16 @@
         
     // object 1 is the callback id
     NSString *url = (NSString*) [arguments objectAtIndex:1];
-        
+    
+    //NSLog(@"showWebPage showLocationBar %@", [options objectForKey:@"showLocationBar"]);    
+    [childBrowser resetControls];
     [childBrowser loadURL:url  ];
-        
+    if([options objectForKey:@"showAddress"]!=nil)
+        [childBrowser showAddress:[[options objectForKey:@"showAddress"] boolValue]];
+    if([options objectForKey:@"showLocationBar"]!=nil)
+        [childBrowser showLocationBar:[[options objectForKey:@"showLocationBar"] boolValue]];
+    if([options objectForKey:@"showNavigationBar"]!=nil)
+        [childBrowser showNavigationBar:[[options objectForKey:@"showNavigationBar"] boolValue]];
 }
 
 -(void) close:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options // args: url

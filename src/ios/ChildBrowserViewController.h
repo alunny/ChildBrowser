@@ -23,7 +23,7 @@
 @end
 
 
-@interface ChildBrowserViewController : UIViewController < UIWebViewDelegate > {
+@interface ChildBrowserViewController : UIViewController < UIWebViewDelegate , UIGestureRecognizerDelegate> {
 	IBOutlet UIWebView* webView;
 	IBOutlet UIBarButtonItem* closeBtn;
 	IBOutlet UIBarButtonItem* refreshBtn;
@@ -32,8 +32,10 @@
 	IBOutlet UIBarButtonItem* fwdBtn;
 	IBOutlet UIBarButtonItem* safariBtn;
 	IBOutlet UIActivityIndicatorView* spinner;
+    IBOutlet UIToolbar* toolbar;
 	BOOL scaleEnabled;
 	BOOL isImage;
+
 	NSString* imageURL;
 	NSArray* supportedOrientations;
 	id <ChildBrowserDelegate> delegate;
@@ -41,14 +43,21 @@
 
 @property (nonatomic, retain)id <ChildBrowserDelegate> delegate;
 @property (nonatomic, retain) 	NSArray* supportedOrientations;
-@property(retain) NSString* imageURL;
-@property(assign) BOOL isImage;
+@property (retain) NSString* imageURL;
+@property (assign) BOOL isImage;
+
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation) interfaceOrientation; 
 - (ChildBrowserViewController*)initWithScale:(BOOL)enabled;
 - (IBAction)onDoneButtonPress:(id)sender;
 - (IBAction)onSafariButtonPress:(id)sender;
 - (void)loadURL:(NSString*)url;
--(void)closeBrowser;
+- (void)closeBrowser;
+
+//Disaplying Controls
+- (void)resetControls;
+- (void)showAddress:(BOOL)isShow;       // display address bar
+- (void)showLocationBar:(BOOL)isShow;   // display the whole location bar
+- (void)showNavigationBar:(BOOL)isShow; // display navigation buttons
 
 @end
