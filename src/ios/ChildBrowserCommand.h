@@ -7,14 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#ifdef PHONEGAP_FRAMEWORK
-	#import <PhoneGap/PGPlugin.h>
+#ifdef CORDOVA_FRAMEWORK
+	#import <Cordova/CDVPlugin.h>
 #else
-	#import "PGPlugin.h"
+	#import "CDVPlugin.h"
 #endif
 #import "ChildBrowserViewController.h"
 
-@interface ChildBrowserCommand : PGPlugin <ChildBrowserDelegate>  {
+@interface ChildBrowserCommand : CDVPlugin <ChildBrowserDelegate>  {
     NSString* callbackId;
     ChildBrowserViewController* childBrowser;
 

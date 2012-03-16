@@ -8,10 +8,10 @@
 
 #import "ChildBrowserCommand.h"
 
-#ifdef PHONEGAP_FRAMEWORK
-	#import <PhoneGap/PhoneGapViewController.h>
+#ifdef CORDOVA_FRAMEWORK
+	#import <Cordova/CDVViewController.h>
 #else
-	#import "PhoneGapViewController.h"
+	#import "CDVViewController.h"
 #endif
 
 
@@ -44,7 +44,7 @@
 	NSString* strOrientations = [ options objectForKey:@"supportedOrientations"];
 	NSArray* supportedOrientations = [strOrientations componentsSeparatedByString:@","];
 */
-    PhoneGapViewController* cont = (PhoneGapViewController*)[ super appViewController ];
+    CDVViewController* cont = (CDVViewController*)[ super appViewController ];
     childBrowser.supportedOrientations = cont.supportedOrientations;
     
     if ([cont respondsToSelector:@selector(presentViewController)]) {
@@ -69,7 +69,7 @@
 
 -(void) onClose
 {
-    PluginResult *result = [PluginResult resultWithStatus:PGCommandStatus_OK
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                       messageAsDictionary:[self dictionaryForEvent:CLOSE_EVENT]];
     [result setKeepCallbackAsBool:YES];
 
@@ -78,7 +78,7 @@
 
 -(void) onOpenInSafari
 {
-	PluginResult *result = [PluginResult resultWithStatus:PGCommandStatus_OK
+	CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                       messageAsDictionary:[self dictionaryForEvent:OPEN_EXTERNAL_EVENT]];
     [result setKeepCallbackAsBool:YES];
 
@@ -95,7 +95,7 @@
 
     [dict setObject:encUrl forKey:@"location"];
 
-    PluginResult *result = [PluginResult resultWithStatus:PGCommandStatus_OK
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK
                                       messageAsDictionary:dict];
     [result setKeepCallbackAsBool:YES];
 
