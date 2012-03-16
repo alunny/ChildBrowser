@@ -121,7 +121,7 @@ public class ChildBrowser extends Plugin {
         try {
             Intent intent = null;
             if (usePhoneGap) {
-                intent = new Intent().setClass((Context) this.ctx, com.phonegap.DroidGap.class);
+                intent = new Intent().setClass((Context) this.ctx, org.apache.cordova.DroidGap.class);
                 intent.setData(Uri.parse(url)); // This line will be removed in future.
                 intent.putExtra("url", url);
 
