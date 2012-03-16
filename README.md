@@ -132,3 +132,4 @@ Copyright 2012, Andrew Lunny, Adobe Systems
 Copyright (c) 2005-2010, Nitobi Software Inc.
 Copyright (c) 2011, IBM Corporation
 (c) 2010 Jesse MacFadyen, Nitobi
+(c) 2012 Randy McMillan
