@@ -41,7 +41,7 @@ import com.phonegap.api.PluginResult;
 import org.apache.cordova.api.CordovaInterface;
 
 public class ChildBrowser extends Plugin {
-    
+
     protected static final String LOG_TAG = "ChildBrowser";
     private static int CLOSE_EVENT = 0;
     private static int LOCATION_CHANGED_EVENT = 1;
@@ -50,7 +50,7 @@ public class ChildBrowser extends Plugin {
 
     private Dialog dialog;
     private WebView webview;
-    private EditText edittext; 
+    private EditText edittext;
     private boolean showLocationBar = true;
 
     /**
@@ -68,14 +68,14 @@ public class ChildBrowser extends Plugin {
         try {
             if (action.equals("showWebPage")) {
                 this.browserCallbackId = callbackId;
-                
+
                 // If the ChildBrowser is already open then throw an error
                 if (dialog != null && dialog.isShowing()) {
                     return new PluginResult(PluginResult.Status.ERROR, "ChildBrowser is already open");
                 }
-                
+
                 result = this.showWebPage(args.getString(0), args.optJSONObject(1));
-                
+
                 if (result.length() > 0) {
                     status = PluginResult.Status.ERROR;
                     return new PluginResult(status, result);
@@ -84,24 +84,21 @@ public class ChildBrowser extends Plugin {
                     pluginResult.setKeepCallback(true);
                     return pluginResult;
                 }
-            }
-            else if (action.equals("close")) {
+            } else if (action.equals("close")) {
                 closeDialog();
-                
+
                 JSONObject obj = new JSONObject();
                 obj.put("type", CLOSE_EVENT);
-                
+
                 PluginResult pluginResult = new PluginResult(status, obj);
                 pluginResult.setKeepCallback(false);
                 return pluginResult;
-            }
-            else if (action.equals("openExternal")) {
+            } else if (action.equals("openExternal")) {
                 result = this.openExternal(args.getString(0), args.optBoolean(1));
                 if (result.length() > 0) {
                     status = PluginResult.Status.ERROR;
                 }
-            }
-            else {
+            } else {
                 status = PluginResult.Status.INVALID_ACTION;
             }
             return new PluginResult(status, result);
@@ -129,17 +126,16 @@ public class ChildBrowser extends Plugin {
                 intent.putExtra("loadUrlTimeoutValue", 60000);
 
                 // These parameters can be configured if you want to show the loading dialog
-                intent.putExtra("loadingDialog", "Wait,Loading web page...");   // show loading dialog
-                intent.putExtra("hideLoadingDialogOnPageLoad", true);           // hide it once page has completely loaded
-            }
-            else {
+                intent.putExtra("loadingDialog", "Wait,Loading web page...");
+                intent.putExtra("hideLoadingDialogOnPageLoad", true);
+            } else {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
             }
             this.ctx.startActivity(intent);
             return "";
         } catch (android.content.ActivityNotFoundException e) {
-            Log.d(LOG_TAG, "ChildBrowser: Error loading url "+url+":"+ e.toString());
+            Log.d(LOG_TAG, "ChildBrowser: Error loading url " + url + ":" + e.toString());
             return e.toString();
         }
     }
@@ -155,7 +151,7 @@ public class ChildBrowser extends Plugin {
     }
 
     /**
-     * Checks to see if it is possible to go back one page in history, then does so.
+     * Sees if it is possible to go back one page in history, then does so
      */
     private void goBack() {
         if (this.webview.canGoBack()) {
@@ -164,7 +160,7 @@ public class ChildBrowser extends Plugin {
     }
 
     /**
-     * Checks to see if it is possible to go forward one page in history, then does so.
+     * Sees if it is possible to go forward one page in history, then does so
      */
     private void goForward() {
         if (this.webview.canGoForward()) {
@@ -174,24 +170,23 @@ public class ChildBrowser extends Plugin {
 
     /**
      * Navigate to the new page
-     * 
+     *
      * @param url to load
      */
-    private void navigate(String url) {        
-        InputMethodManager imm = (InputMethodManager)this.ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+    private void navigate(String url) {
+        InputMethodManager imm = (InputMethodManager) this.ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
 
         if (!url.startsWith("http")) {
-            this.webview.loadUrl("http://" + url);            
+            this.webview.loadUrl("http://" + url);
         }
         this.webview.loadUrl(url);
         this.webview.requestFocus();
     }
 
-
     /**
      * Should we show the location bar?
-     * 
+     *
      * @return boolean
      */
     private boolean getShowLocationBar() {
@@ -202,15 +197,15 @@ public class ChildBrowser extends Plugin {
      * Display a new browser with the specified URL.
      *
      * @param url           The url to load.
-     * @param jsonObject 
+     * @param jsonObject
      */
     public String showWebPage(final String url, JSONObject options) {
         // Determine if we should hide the location bar.
         if (options != null) {
             showLocationBar = options.optBoolean("showLocationBar", true);
         }
-        
-        // Create dialog in new thread 
+
+        // Create dialog in new thread
         Runnable runnable = new Runnable() {
             public void run() {
                 dialog = new Dialog((Context) ctx);
@@ -218,30 +213,30 @@ public class ChildBrowser extends Plugin {
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
                 dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                        public void onDismiss(DialogInterface dialog) {
-                            try {
-                                JSONObject obj = new JSONObject();
-                                obj.put("type", CLOSE_EVENT);
+                    public void onDismiss(DialogInterface dialog) {
+                        try {
+                            JSONObject obj = new JSONObject();
+                            obj.put("type", CLOSE_EVENT);
 
-                                sendUpdate(obj, false);
-                            } catch (JSONException e) {
-                                Log.d(LOG_TAG, "Should never happen");
-                            }
+                            sendUpdate(obj, false);
+                        } catch (JSONException e) {
+                            Log.d(LOG_TAG, "Should never happen");
                         }
+                    }
                 });
 
-                LinearLayout.LayoutParams backParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-                LinearLayout.LayoutParams forwardParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
-                LinearLayout.LayoutParams editParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT, 1.0f);
-                LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams backParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams forwardParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams editParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1.0f);
+                LinearLayout.LayoutParams closeParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                 LinearLayout.LayoutParams wvParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-                
+
                 LinearLayout main = new LinearLayout((Context) ctx);
                 main.setOrientation(LinearLayout.VERTICAL);
-                
+
                 LinearLayout toolbar = new LinearLayout((Context) ctx);
                 toolbar.setOrientation(LinearLayout.HORIZONTAL);
-                
+
                 ImageButton back = new ImageButton((Context) ctx);
                 back.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -267,16 +262,16 @@ public class ChildBrowser extends Plugin {
                     forward.setImageBitmap(loadDrawable("www/childbrowser/icon_arrow_right.png"));
                 } catch (IOException e) {
                     Log.e(LOG_TAG, e.getMessage(), e);
-                }               
+                }
                 forward.setLayoutParams(forwardParams);
-                
+
                 edittext = new EditText((Context) ctx);
                 edittext.setOnKeyListener(new View.OnKeyListener() {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
                         if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                          navigate(edittext.getText().toString());
-                          return true;
+                            navigate(edittext.getText().toString());
+                            return true;
                         }
                         return false;
                     }
@@ -285,7 +280,7 @@ public class ChildBrowser extends Plugin {
                 edittext.setSingleLine(true);
                 edittext.setText(url);
                 edittext.setLayoutParams(editParams);
-                
+
                 ImageButton close = new ImageButton((Context) ctx);
                 close.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
@@ -299,25 +294,24 @@ public class ChildBrowser extends Plugin {
                     Log.e(LOG_TAG, e.getMessage(), e);
                 }
                 close.setLayoutParams(closeParams);
-                                
+
                 webview = new WebView((Context) ctx);
                 webview.getSettings().setJavaScriptEnabled(true);
                 webview.getSettings().setBuiltInZoomControls(true);
                 WebViewClient client = new ChildBrowserClient(ctx, edittext);
-                webview.setWebViewClient(client);                
+                webview.setWebViewClient(client);
                 webview.loadUrl(url);
                 webview.setId(5);
                 webview.setInitialScale(0);
                 webview.setLayoutParams(wvParams);
                 webview.requestFocus();
                 webview.requestFocusFromTouch();
-                
-                
+
                 toolbar.addView(back);
                 toolbar.addView(forward);
                 toolbar.addView(edittext);
                 toolbar.addView(close);
-                
+
                 if (getShowLocationBar()) {
                     main.addView(toolbar);
                 }
@@ -327,24 +321,24 @@ public class ChildBrowser extends Plugin {
                 lp.copyFrom(dialog.getWindow().getAttributes());
                 lp.width = WindowManager.LayoutParams.FILL_PARENT;
                 lp.height = WindowManager.LayoutParams.FILL_PARENT;
-                
+
                 dialog.setContentView(main);
                 dialog.show();
                 dialog.getWindow().setAttributes(lp);
             }
-            
+
             private Bitmap loadDrawable(String filename) throws java.io.IOException {
-                InputStream input = ctx.getAssets().open(filename);    
+                InputStream input = ctx.getAssets().open(filename);
                 return BitmapFactory.decodeStream(input);
             }
         };
         this.ctx.runOnUiThread(runnable);
         return "";
     }
-    
+
     /**
      * Create a new plugin result and send it back to JavaScript
-     * 
+     *
      * @param obj a JSONObject contain event payload information
      */
     private void sendUpdate(JSONObject obj, boolean keepCallback) {
@@ -364,40 +358,40 @@ public class ChildBrowser extends Plugin {
 
         /**
          * Constructor.
-         * 
+         *
          * @param mContext
-         * @param edittext 
+         * @param edittext
          */
         public ChildBrowserClient(CordovaInterface mContext, EditText mEditText) {
             this.ctx = mContext;
             this.edittext = mEditText;
-        }       
+        }
 
         /**
          * Notify the host application that a page has started loading.
-         * 
+         *
          * @param view          The webview initiating the callback.
          * @param url           The url of the page.
          */
         @Override
-        public void onPageStarted(WebView view, String url,  Bitmap favicon) {
-            super.onPageStarted(view, url, favicon);            
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
             String newloc;
             if (url.startsWith("http:") || url.startsWith("https:")) {
                 newloc = url;
             } else {
                 newloc = "http://" + url;
             }
-            
-            if (!newloc.equals(edittext.getText().toString())) {           
+
+            if (!newloc.equals(edittext.getText().toString())) {
                 edittext.setText(newloc);
             }
-            
+
             try {
                 JSONObject obj = new JSONObject();
                 obj.put("type", LOCATION_CHANGED_EVENT);
                 obj.put("location", url);
-                
+
                 sendUpdate(obj, true);
             } catch (JSONException e) {
                 Log.d("ChildBrowser", "This should never happen");
