@@ -33,6 +33,9 @@
 }
 */
 
+//    Add *-72@2x.png images to ChildBrowser.bundle
+//    Just duplicate and rename - @RandyMcMillan
+
 + (NSString*) resolveImageResource:(NSString*)resource
 {
 	NSString* systemVersion = [[UIDevice currentDevice] systemVersion];
@@ -42,10 +45,15 @@
 	if (isLessThaniOS4)
 	{
         return [NSString stringWithFormat:@"%@.png", resource];
-	}
+	} else if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] == YES && [[UIScreen mainScreen] scale] == 2.00)
+    {
+	    return [NSString stringWithFormat:@"%@@2x.png", resource];
+    }
+
 	
 	return resource;
 }
+
 
 
 - (ChildBrowserViewController*)initWithScale:(BOOL)enabled
