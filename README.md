@@ -126,12 +126,22 @@ Example:
         alert('opening Mobile Safari');
     };
 
+## Thank you GitHub People
+
+* @RandyMcMillan
+* @reinberger
+* @yimingkuan
+
 ## License
 
 MIT License (2008). See http://opensource.org/licenses/alphabetical for full text.
 
 Copyright 2012, Andrew Lunny, Adobe Systems
+
 Copyright (c) 2005-2010, Nitobi Software Inc.
+
 Copyright (c) 2011, IBM Corporation
-(c) 2010 Jesse MacFadyen, Nitobi
-(c) 2012 Randy McMillan
+
+Copyright (c) 2010 Jesse MacFadyen, Nitobi
+
+Copyright (c) 2012 Randy McMillan
