@@ -121,7 +121,7 @@ public class ChildBrowser extends Plugin {
         try {
             Intent intent = null;
             if (usePhoneGap) {
-                intent = new Intent().setClass((Context) this.ctx, org.apache.cordova.DroidGap.class);
+                intent = new Intent().setClass((Context) this.ctx.getActivity(), org.apache.cordova.DroidGap.class);
                 intent.setData(Uri.parse(url)); // This line will be removed in future.
                 intent.putExtra("url", url);
 
@@ -135,7 +135,7 @@ public class ChildBrowser extends Plugin {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
             }
-            this.ctx.startActivity(intent);
+            this.ctx.getActivity().startActivity(intent);
             return "";
         } catch (android.content.ActivityNotFoundException e) {
             Log.d(LOG_TAG, "ChildBrowser: Error loading url " + url + ":" + e.toString());
@@ -177,7 +177,7 @@ public class ChildBrowser extends Plugin {
      * @param url to load
      */
     private void navigate(String url) {
-        InputMethodManager imm = (InputMethodManager) this.ctx.getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) this.ctx.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
 
         if (!url.startsWith("http")) {
@@ -213,7 +213,7 @@ public class ChildBrowser extends Plugin {
         // Create dialog in new thread
         Runnable runnable = new Runnable() {
             public void run() {
-                dialog = new Dialog((Context) ctx);
+                dialog = new Dialog((Context) ctx.getActivity());
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
@@ -242,13 +242,13 @@ public class ChildBrowser extends Plugin {
                     closeParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f);
                 }
 
-                LinearLayout main = new LinearLayout((Context) ctx);
+                LinearLayout main = new LinearLayout((Context) ctx.getActivity());
                 main.setOrientation(LinearLayout.VERTICAL);
 
-                LinearLayout toolbar = new LinearLayout((Context) ctx);
+                LinearLayout toolbar = new LinearLayout((Context) ctx.getActivity());
                 toolbar.setOrientation(LinearLayout.HORIZONTAL);
 
-                ImageButton back = new ImageButton((Context) ctx);
+                ImageButton back = new ImageButton((Context) ctx.getActivity());
                 back.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         goBack();
@@ -262,7 +262,7 @@ public class ChildBrowser extends Plugin {
                 }
                 back.setLayoutParams(backParams);
 
-                ImageButton forward = new ImageButton((Context) ctx);
+                ImageButton forward = new ImageButton((Context) ctx.getActivity());
                 forward.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         goForward();
@@ -276,7 +276,7 @@ public class ChildBrowser extends Plugin {
                 }
                 forward.setLayoutParams(forwardParams);
 
-                edittext = new EditText((Context) ctx);
+                edittext = new EditText((Context) ctx.getActivity());
                 edittext.setOnKeyListener(new View.OnKeyListener() {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
@@ -292,7 +292,7 @@ public class ChildBrowser extends Plugin {
                 edittext.setText(url);
                 edittext.setLayoutParams(editParams);
 
-                ImageButton close = new ImageButton((Context) ctx);
+                ImageButton close = new ImageButton((Context) ctx.getActivity());
                 close.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         closeDialog();
@@ -306,7 +306,7 @@ public class ChildBrowser extends Plugin {
                 }
                 close.setLayoutParams(closeParams);
 
-                webview = new WebView((Context) ctx);
+                webview = new WebView((Context) ctx.getActivity());
                 webview.getSettings().setJavaScriptEnabled(true);
                 webview.getSettings().setBuiltInZoomControls(true);
                 WebViewClient client = new ChildBrowserClient(ctx, edittext);
@@ -349,11 +349,11 @@ public class ChildBrowser extends Plugin {
             }
 
             private Bitmap loadDrawable(String filename) throws java.io.IOException {
-                InputStream input = ctx.getAssets().open(filename);
+                InputStream input = ctx.getActivity().getAssets().open(filename);
                 return BitmapFactory.decodeStream(input);
             }
         };
-        this.ctx.runOnUiThread(runnable);
+        this.ctx.getActivity().runOnUiThread(runnable);
         return "";
     }
 
