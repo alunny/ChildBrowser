@@ -35,11 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import com.phonegap.api.PhonegapActivity;
-import com.phonegap.api.Plugin;
-import com.phonegap.api.PluginResult;
-
-import org.apache.cordova.api.CordovaInterface;
+import org.apache.cordova.api.*;
 
 public class ChildBrowser extends Plugin {
 
@@ -121,7 +117,7 @@ public class ChildBrowser extends Plugin {
         try {
             Intent intent = null;
             if (usePhoneGap) {
-                intent = new Intent().setClass((Context) this.ctx.getActivity(), org.apache.cordova.DroidGap.class);
+                intent = new Intent().setClass(cordova.getActivity(), org.apache.cordova.DroidGap.class);
                 intent.setData(Uri.parse(url)); // This line will be removed in future.
                 intent.putExtra("url", url);
 
@@ -135,7 +131,7 @@ public class ChildBrowser extends Plugin {
                 intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
             }
-            this.ctx.getActivity().startActivity(intent);
+            cordova.getActivity().startActivity(intent);
             return "";
         } catch (android.content.ActivityNotFoundException e) {
             Log.d(LOG_TAG, "ChildBrowser: Error loading url " + url + ":" + e.toString());
@@ -177,7 +173,7 @@ public class ChildBrowser extends Plugin {
      * @param url to load
      */
     private void navigate(String url) {
-        InputMethodManager imm = (InputMethodManager) this.ctx.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) cordova.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(edittext.getWindowToken(), 0);
 
         if (!url.startsWith("http")) {
@@ -213,7 +209,7 @@ public class ChildBrowser extends Plugin {
         // Create dialog in new thread
         Runnable runnable = new Runnable() {
             public void run() {
-                dialog = new Dialog((Context) ctx.getActivity());
+                dialog = new Dialog(cordova.getContext());
 
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setCancelable(true);
@@ -242,13 +238,13 @@ public class ChildBrowser extends Plugin {
                     closeParams = new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1.0f);
                 }
 
-                LinearLayout main = new LinearLayout((Context) ctx.getActivity());
+                LinearLayout main = new LinearLayout(cordova.getActivity());
                 main.setOrientation(LinearLayout.VERTICAL);
 
-                LinearLayout toolbar = new LinearLayout((Context) ctx.getActivity());
+                LinearLayout toolbar = new LinearLayout(cordova.getActivity());
                 toolbar.setOrientation(LinearLayout.HORIZONTAL);
 
-                ImageButton back = new ImageButton((Context) ctx.getActivity());
+                ImageButton back = new ImageButton(cordova.getActivity());
                 back.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         goBack();
@@ -262,7 +258,7 @@ public class ChildBrowser extends Plugin {
                 }
                 back.setLayoutParams(backParams);
 
-                ImageButton forward = new ImageButton((Context) ctx.getActivity());
+                ImageButton forward = new ImageButton(cordova.getActivity());
                 forward.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         goForward();
@@ -276,7 +272,7 @@ public class ChildBrowser extends Plugin {
                 }
                 forward.setLayoutParams(forwardParams);
 
-                edittext = new EditText((Context) ctx.getActivity());
+                edittext = new EditText(cordova.getActivity());
                 edittext.setOnKeyListener(new View.OnKeyListener() {
                     public boolean onKey(View v, int keyCode, KeyEvent event) {
                         // If the event is a key-down event on the "enter" button
@@ -292,7 +288,7 @@ public class ChildBrowser extends Plugin {
                 edittext.setText(url);
                 edittext.setLayoutParams(editParams);
 
-                ImageButton close = new ImageButton((Context) ctx.getActivity());
+                ImageButton close = new ImageButton(cordova.getActivity());
                 close.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         closeDialog();
@@ -306,7 +302,7 @@ public class ChildBrowser extends Plugin {
                 }
                 close.setLayoutParams(closeParams);
 
-                webview = new WebView((Context) ctx.getActivity());
+                webview = new WebView(cordova.getActivity());
                 webview.getSettings().setJavaScriptEnabled(true);
                 webview.getSettings().setBuiltInZoomControls(true);
                 WebViewClient client = new ChildBrowserClient(ctx, edittext);
@@ -349,11 +345,11 @@ public class ChildBrowser extends Plugin {
             }
 
             private Bitmap loadDrawable(String filename) throws java.io.IOException {
-                InputStream input = ctx.getActivity().getAssets().open(filename);
+                InputStream input = cordova.getActivity().getAssets().open(filename);
                 return BitmapFactory.decodeStream(input);
             }
         };
-        this.ctx.getActivity().runOnUiThread(runnable);
+        cordova.getActivity().runOnUiThread(runnable);
         return "";
     }
 
