@@ -48,7 +48,7 @@
 	NSString* strOrientations = [ options objectForKey:@"supportedOrientations"];
 	NSArray* supportedOrientations = [strOrientations componentsSeparatedByString:@","];
 */
-    CDVViewController* cont = (CDVViewController*)[ super appViewController ];
+    CDVViewController* cont = (CDVViewController*)[ super viewController ];
     childBrowser.supportedOrientations = cont.supportedOrientations;
     
     if ([cont respondsToSelector:@selector(presentViewController)]) {
