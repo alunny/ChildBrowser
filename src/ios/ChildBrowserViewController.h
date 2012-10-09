@@ -22,32 +22,33 @@
 -(void) onClose;
 @end
 
+@protocol CDVOrientationDelegate <NSObject>
 
-@interface ChildBrowserViewController : UIViewController < UIWebViewDelegate , UIGestureRecognizerDelegate> {
-	IBOutlet UIWebView* webView;
-	IBOutlet UIBarButtonItem* closeBtn;
-	IBOutlet UIBarButtonItem* refreshBtn;
-	IBOutlet UILabel* addressLabel;
-	IBOutlet UIBarButtonItem* backBtn;
-	IBOutlet UIBarButtonItem* fwdBtn;
-	IBOutlet UIBarButtonItem* safariBtn;
-	IBOutlet UIActivityIndicatorView* spinner;
-    IBOutlet UIToolbar* toolbar;
-	BOOL scaleEnabled;
-	BOOL isImage;
+- (NSUInteger)supportedInterfaceOrientations;
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+- (BOOL)shouldAutorotate;
 
-	NSString* imageURL;
-	NSArray* supportedOrientations;
-	id <ChildBrowserDelegate> delegate;
-}
+@end
 
-@property (nonatomic, retain)id <ChildBrowserDelegate> delegate;
-@property (nonatomic, retain) 	NSArray* supportedOrientations;
-@property (retain) NSString* imageURL;
+@interface ChildBrowserViewController : UIViewController < UIWebViewDelegate , UIGestureRecognizerDelegate> {}
+
+@property (nonatomic, strong) IBOutlet UIWebView* webView;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* closeBtn;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* refreshBtn;
+@property (nonatomic, strong) IBOutlet UILabel* addressLabel;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* backBtn;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* fwdBtn;
+@property (nonatomic, strong) IBOutlet UIBarButtonItem* safariBtn;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView* spinner;
+@property (nonatomic, strong) IBOutlet UIToolbar* toolbar;
+
+@property (nonatomic, unsafe_unretained)id <ChildBrowserDelegate> delegate;
+@property (nonatomic, unsafe_unretained) id orientationDelegate;
+
+@property (copy) NSString* imageURL;
 @property (assign) BOOL isImage;
+@property (assign) BOOL scaleEnabled;
 
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation) interfaceOrientation; 
 - (ChildBrowserViewController*)initWithScale:(BOOL)enabled;
 - (IBAction)onDoneButtonPress:(id)sender;
 - (IBAction)onSafariButtonPress:(id)sender;

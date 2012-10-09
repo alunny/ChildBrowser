@@ -18,20 +18,10 @@
 
 @implementation ChildBrowserViewController
 
-@synthesize imageURL;
-@synthesize supportedOrientations;
-@synthesize isImage;
-@synthesize delegate;
-
-/*
- // The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    if (self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil]) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
+@synthesize imageURL, isImage, scaleEnabled;
+@synthesize delegate, orientationDelegate;
+@synthesize spinner, webView, addressLabel, toolbar;
+@synthesize closeBtn, refreshBtn, backBtn, fwdBtn, safariBtn;
 
 //    Add *-72@2x.png images to ChildBrowser.bundle
 //    Just duplicate and rename - @RandyMcMillan
@@ -64,7 +54,7 @@
         [self addGestureRecognizer];
     }
 	
-	scaleEnabled = enabled;
+	self.scaleEnabled = enabled;
 	
 	return self;	
 }
@@ -74,21 +64,21 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-	refreshBtn.image = [UIImage imageNamed:[[self class] resolveImageResource:@"ChildBrowser.bundle/but_refresh"]];
-	backBtn.image = [UIImage imageNamed:[[self class] resolveImageResource:@"ChildBrowser.bundle/arrow_left"]];
-	fwdBtn.image = [UIImage imageNamed:[[self class] resolveImageResource:@"ChildBrowser.bundle/arrow_right"]];
-	safariBtn.image = [UIImage imageNamed:[[self class] resolveImageResource:@"ChildBrowser.bundle/compass"]];
+	self.refreshBtn.image = [UIImage imageNamed:[[self class]
+                                                 resolveImageResource:@"ChildBrowser.bundle/but_refresh"]];
+	self.backBtn.image = [UIImage imageNamed:[[self class]
+                                              resolveImageResource:@"ChildBrowser.bundle/arrow_left"]];
+	self.fwdBtn.image = [UIImage imageNamed:[[self class]
+                                        resolveImageResource:@"ChildBrowser.bundle/arrow_right"]];
+	self.safariBtn.image = [UIImage imageNamed:[[self class]
+                                           resolveImageResource:@"ChildBrowser.bundle/compass"]];
 
-	webView.delegate = self;
-	webView.scalesPageToFit = TRUE;
-	webView.backgroundColor = [UIColor whiteColor];
+	self.webView.delegate = self;
+	self.webView.scalesPageToFit = TRUE;
+	self.webView.backgroundColor = [UIColor whiteColor];
     
 	NSLog(@"View did load");
 }
-
-
-
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -105,26 +95,31 @@
 
 
 - (void)dealloc {
-	webView.delegate = nil;
+	self.webView.delegate = nil;
+    self.delegate = nil;
+    self.orientationDelegate = nil;
 	
-	[webView release];
-	[closeBtn release];
-	[refreshBtn release];
-	[addressLabel release];
-	[backBtn release];
-	[fwdBtn release];
-	[safariBtn release];
-	[spinner release];
-	[ supportedOrientations release];
+#if !__has_feature(objc_arc)
+	[self.webView release];
+	[self.closeBtn release];
+	[self.refreshBtn release];
+	[self.addressLabel release];
+	[self.backBtn release];
+	[self.fwdBtn release];
+	[self.safariBtn release];
+	[self.spinner release];
+    [self.toolbar release];
+
 	[super dealloc];
+#endif
 }
 
 -(void)closeBrowser
 {
 	
-	if(delegate != NULL)
+	if (self.delegate != NULL)
 	{
-		[delegate onClose];		
+		[self.delegate onClose];
 	}
     if ([self respondsToSelector:@selector(presentingViewController)]) { 
         //Reference UIViewController.h Line:179 for update to iOS 5 difference - @RandyMcMillan
@@ -136,20 +131,20 @@
 
 -(IBAction) onDoneButtonPress:(id)sender
 {
-    [webView stopLoading];
-	[ self closeBrowser];
+    [self.webView stopLoading];
+	[self closeBrowser];
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"about:blank"]];
-    [webView loadRequest:request];
+    [self.webView loadRequest:request];
 }
 
 
 -(IBAction) onSafariButtonPress:(id)sender
 {
 	
-	if(delegate != NULL)
+	if (self.delegate != nil)
 	{
-		[delegate onOpenInSafari];		
+		[self.delegate onOpenInSafari];
 	}
 	
 	if(isImage)
@@ -166,22 +161,6 @@
 	 
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation) interfaceOrientation 
-{
-	BOOL autoRotate = [self.supportedOrientations count] > 1; // autorotate if only more than 1 orientation supported
-	if (autoRotate)
-	{
-		if ([self.supportedOrientations containsObject:
-			 [NSNumber numberWithInt:interfaceOrientation]]) {
-			return YES;
-		}
-    }
-	
-	return NO;
-}
-
-
-
 
 - (void)loadURL:(NSString*)url
 {
@@ -193,9 +172,9 @@
 		[url hasSuffix:@".bmp" ]  || 
 		[url hasSuffix:@".gif" ]  )
 	{
-		[ imageURL release ];
-		imageURL = [url copy];
-		isImage = YES;
+		self.imageURL = nil;
+		self.imageURL = url;
+		self.isImage = YES;
 		NSString* htmlText = @"<html><body style='background-color:#333;margin:0px;padding:0px;'><img style='min-height:200px;margin:0px;padding:0px;width:100%;height:auto;' alt='' src='IMGSRC'/></body></html>";
 		htmlText = [ htmlText stringByReplacingOccurrencesOfString:@"IMGSRC" withString:url ];
 
@@ -207,35 +186,34 @@
 		imageURL = @"";
 		isImage = NO;
 		NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-		[webView loadRequest:request];
+		[self.webView loadRequest:request];
 	}
-	webView.hidden = NO;
+	self.webView.hidden = NO;
 }
 
 
 - (void)webViewDidStartLoad:(UIWebView *)sender {
-	addressLabel.text = @"Loading...";
-	backBtn.enabled = webView.canGoBack;
-	fwdBtn.enabled = webView.canGoForward;
+	self.addressLabel.text = @"Loading...";
+	self.backBtn.enabled = webView.canGoBack;
+	self.fwdBtn.enabled = webView.canGoForward;
 	
-	[ spinner startAnimating ];
+	[self.spinner startAnimating];
 	
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)sender 
 {
-	NSURLRequest *request = webView.request;
+	NSURLRequest *request = self.webView.request;
 	NSLog(@"New Address is : %@",request.URL.absoluteString);
-	addressLabel.text = request.URL.absoluteString;
-	backBtn.enabled = webView.canGoBack;
-	fwdBtn.enabled = webView.canGoForward;
-	[ spinner stopAnimating ];
-	
-	if(delegate != NULL)
-	{
-		[delegate onChildLocationChange:request.URL.absoluteString];		
-	}
 
+	self.addressLabel.text = request.URL.absoluteString;
+	self.backBtn.enabled = webView.canGoBack;
+	self.fwdBtn.enabled = webView.canGoForward;
+	[self.spinner stopAnimating];
+	
+	if (self.delegate != NULL) {
+		[self.delegate onChildLocationChange:request.URL.absoluteString];
+	}
 }
 
 - (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error {
@@ -321,6 +299,35 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
+    return YES;
+}
+
+#pragma mark CDVOrientationDelegate
+
+- (BOOL)shouldAutorotate
+{
+    if ((self.orientationDelegate != nil) && [self.orientationDelegate respondsToSelector:@selector(shouldAutorotate)]) {
+        return [self.orientationDelegate shouldAutorotate];
+    }
+    return YES;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if ((self.orientationDelegate != nil) && [self.orientationDelegate respondsToSelector:@selector(supportedInterfaceOrientations)]) {
+        return [self.orientationDelegate supportedInterfaceOrientations];
+    }
+
+    // return UIInterfaceOrientationMaskPortrait; // NO - is IOS 6 only
+    return (1 << UIInterfaceOrientationPortrait);
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    if ((self.orientationDelegate != nil) && [self.orientationDelegate respondsToSelector:@selector(shouldAutorotateToInterfaceOrientation:)]) {
+        return [self.orientationDelegate shouldAutorotateToInterfaceOrientation:interfaceOrientation];
+    }
+
     return YES;
 }
 

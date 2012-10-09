@@ -7,13 +7,7 @@
 //
 
 #import "ChildBrowserCommand.h"
-
-#ifdef CORDOVA_FRAMEWORK
-	#import <Cordova/CDVViewController.h>
-#else
-	#import "CDVViewController.h"
-#endif
-
+#import <Cordova/CDVViewController.h>
 
 @implementation ChildBrowserCommand
 
@@ -34,36 +28,25 @@
 {	
     self.callbackId = [arguments objectAtIndex:0];
 	
-    if(childBrowser == NULL)
-	{
-		childBrowser = [[ ChildBrowserViewController alloc ] initWithScale:FALSE ];
-		childBrowser.delegate = self;
-	}
-    
-    //Show location bar
-//    if([options objectForKey:@"showLocationBar"]!=nil)
-//        [childBrowser showLocationBar:[[options objectForKey:@"showLocationBar"] boolValue]];
+    if (self.childBrowser == nil) {
+#if __has_feature(objc_arc)
+        self.childBrowser = [[ChildBrowserViewController alloc] initWithScale:NO];
+#else
+        self.childBrowser = [[[ChildBrowserViewController alloc] initWithScale:NO] autorelease];
+#endif
+        self.childBrowser.delegate = self;
+        self.childBrowser.orientationDelegate = self.viewController;
+    }
+
     NSLog(@"showLocationBar %d",(int)[[options objectForKey:@"showLocationBar"] boolValue]);
-/* // TODO: Work in progress
-	NSString* strOrientations = [ options objectForKey:@"supportedOrientations"];
-	NSArray* supportedOrientations = [strOrientations componentsSeparatedByString:@","];
-*/
-    CDVViewController* cont = (CDVViewController*)[ super viewController ];
-    childBrowser.supportedOrientations = cont.supportedOrientations;
-    
-    if ([cont respondsToSelector:@selector(presentViewController)]) {
-        //Reference UIViewController.h Line:179 for update to iOS 5 difference - @RandyMcMillan
-        [cont presentViewController:childBrowser animated:YES completion:nil];        
-    } else {
-        [ cont presentModalViewController:childBrowser animated:YES ];
-    }                 
+
+    [self.viewController presentModalViewController:childBrowser animated:YES];
         
-    // object 1 is the callback id
+    // objectAtIndex 0 is the callback id
     NSString *url = (NSString*) [arguments objectAtIndex:1];
     
-    //NSLog(@"showWebPage showLocationBar %@", [options objectForKey:@"showLocationBar"]);    
-    [childBrowser resetControls];
-    [childBrowser loadURL:url  ];
+    [self.childBrowser resetControls];
+    [self.childBrowser loadURL:url];
     if([options objectForKey:@"showAddress"]!=nil)
         [childBrowser showAddress:[[options objectForKey:@"showAddress"] boolValue]];
     if([options objectForKey:@"showLocationBar"]!=nil)
@@ -74,7 +57,7 @@
 
 -(void) close:(NSMutableArray*)arguments withDict:(NSMutableDictionary*)options // args: url
 {
-    [ childBrowser closeBrowser];
+    [self.childBrowser closeBrowser];
 	
 }
 
@@ -117,5 +100,14 @@
 {
     return [NSDictionary dictionaryWithObject:event forKey:@"type"];
 }
+
+#if !__has_feature(objc_arc)
+- (void)dealloc
+{
+    self.childBrowser = nil;
+
+    [super dealloc];
+}
+#endif
 
 @end
