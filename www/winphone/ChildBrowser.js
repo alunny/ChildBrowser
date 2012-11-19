@@ -9,23 +9,26 @@ function ChildBrowser() {
 
 // Callback when the location of the page changes
 // called from native
-ChildBrowser._onLocationChange = function(newLoc)
-{
-  window.plugins.childBrowser.onLocationChange(newLoc);
+ChildBrowser._onLocationChange = function (newLoc) {
+    if (window.plugins.childBrowser.onLocationChange) {
+        window.plugins.childBrowser.onLocationChange(newLoc);
+    }
 };
 
 // Callback when the user chooses the 'Done' button
 // called from native
-ChildBrowser._onClose = function()
-{
-  window.plugins.childBrowser.onClose();
+ChildBrowser._onClose = function () {
+    if (window.plugins.childBrowser.onClose) {
+        window.plugins.childBrowser.onClose();
+    }
 };
 
 // Callback when the user chooses the 'open in Safari' button
 // called from native
-ChildBrowser._onOpenExternal = function()
-{
-  window.plugins.childBrowser.onOpenExternal();
+ChildBrowser._onOpenExternal = function () {
+    if (window.plugins.childBrowser.onOpenExternal) {
+        window.plugins.childBrowser.onOpenExternal();
+    }
 };
 
 // Pages loaded into the ChildBrowser can execute callback scripts, so be careful to
@@ -51,6 +54,9 @@ ChildBrowser.prototype.showWebPage = function(loc,geolocationEnabled)
 
         if (event.type == "locationChanged") {
             ChildBrowser._onLocationChange(event.location);
+        }
+        else if (event.type == "close") {
+            ChildBrowser._onClose();
         }
   };
 
