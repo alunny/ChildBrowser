@@ -166,13 +166,17 @@ namespace WP7GapClassLib.PhoneGap.Commands
                         }
                     }
                     browser = null;
+                    string message = JSON.JsonHelper.Serialize("{\"type\":\"close\"}");
+                    PluginResult result = new PluginResult(PluginResult.Status.OK, message);
+                    result.KeepCallback = true;
+                    this.DispatchCommandResult(result);
                 });
             }
         }
 
         void browser_Navigated(object sender, System.Windows.Navigation.NavigationEventArgs e)
         {
-            string message = "{\"type\":\"locationChanged\", \"location\":\"" + e.Uri.AbsoluteUri + "\"}";
+            string message = JSON.JsonHelper.Serialize("{\"type\":\"locationChanged\", \"location\":\"" + e.Uri.AbsoluteUri + "\"}");
             PluginResult result = new PluginResult(PluginResult.Status.OK, message);
             result.KeepCallback = true;
             this.DispatchCommandResult(result);
@@ -180,7 +184,7 @@ namespace WP7GapClassLib.PhoneGap.Commands
 
         void browser_NavigationFailed(object sender, System.Windows.Navigation.NavigationFailedEventArgs e)
         {
-            string message = "{\"type\":\"navigationError\",\"location\":\"" + e.Uri.AbsoluteUri + "\"}";
+            string message = JSON.JsonHelper.Serialize("{\"type\":\"navigationError\",\"location\":\"" + e.Uri.AbsoluteUri + "\"}");
             PluginResult result = new PluginResult(PluginResult.Status.ERROR, message);
             result.KeepCallback = true;
             this.DispatchCommandResult(result);
@@ -188,7 +192,7 @@ namespace WP7GapClassLib.PhoneGap.Commands
 
         void browser_Navigating(object sender, NavigatingEventArgs e)
         {
-            string message = "{\"type\":\"locationAboutToChange\",\"location\":\"" + e.Uri.AbsoluteUri + "\"}";
+            string message = JSON.JsonHelper.Serialize("{\"type\":\"locationAboutToChange\",\"location\":\"" + e.Uri.AbsoluteUri + "\"}");
             PluginResult result = new PluginResult(PluginResult.Status.OK, message);
             result.KeepCallback = true;
             this.DispatchCommandResult(result);
