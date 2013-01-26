@@ -40,7 +40,7 @@
 
     NSLog(@"showLocationBar %d",(int)[[options objectForKey:@"showLocationBar"] boolValue]);
 
-    [self.viewController presentModalViewController:childBrowser animated:YES];
+    [self.viewController presentModalViewController:self.childBrowser animated:YES];
         
     // objectAtIndex 0 is the callback id
     NSString *url = (NSString*) [arguments objectAtIndex:1];
