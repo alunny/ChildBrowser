@@ -57,7 +57,7 @@ var ChildBrowser = (function (gap) {
      */
     ChildBrowser.install = function () {
         console.log('ChildBrowser.install is deprecated');
-    }
+    };
 
     /**
      * Display a new browser with the specified URL.
