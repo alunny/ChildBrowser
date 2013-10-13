@@ -1,5 +1,13 @@
 # ChildBrowser plugin for PhoneGap
 
+# Important Note
+
+I (@alunny) am no longer working on this project, and no longer on PhoneGap
+Build. If you would like changes to get into PhoneGap Build's version of this
+plugin, please see https://github.com/phonegap-build/ChildBrowser
+
+# Old README
+
 This is a prototype of a cross-platform ChildBrowser PhoneGap plugin. Android
 and iOS are currently supported. Support for BlackBerry and Windows Phone is
 also planned.
